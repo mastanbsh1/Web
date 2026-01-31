@@ -72,13 +72,13 @@ jobs:
       - name: Initialize Terraform
         run: |
           terraform init \
-            -backend-config="environments/${{ env.TF_ENVIRONMENT }}/backend.hcl"
+            -backend-config="envs/${{ env.TF_ENVIRONMENT }}/backend.hcl"
         working-directory: ${{ env.TF_WORKING_DIR }}
 
       - name: Terraform Destroy Plan
         run: |
           terraform plan -destroy \
-            -var-file="environments/${{ env.TF_ENVIRONMENT }}/terraform.tfvars" \
+            -var-file="envs/${{ env.TF_ENVIRONMENT }}/terraform.tfvars" \
             -out=destroy-plan
         working-directory: ${{ env.TF_WORKING_DIR }}
 

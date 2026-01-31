@@ -1,6 +1,7 @@
 # =============================================================================
 # DEV Environment Configuration
 # Branch: develop -> Environment: dev
+# URL: https://dev.karthik.uk
 # =============================================================================
 
 environment = "dev"
@@ -10,12 +11,12 @@ git_branch  = "develop"
 aws_region = "us-east-1"
 
 # Project
-project_name = "web-app"
+project_name = "greentrend"
 
-# Domain Configuration
-domain_name        = "example.com"  # Replace with your domain
-create_hosted_zone = false           # Set to true if you need to create a new zone
-hosted_zone_id     = ""              # Provide existing zone ID if create_hosted_zone is false
+# Domain Configuration - YOUR DOMAIN
+domain_name        = "karthik.uk"
+create_hosted_zone = true   # Set to true to create Route53 hosted zone
+hosted_zone_id     = ""     # Leave empty if creating new zone, or provide existing zone ID
 
 # VPC Configuration
 vpc_cidr           = "10.0.0.0/16"
