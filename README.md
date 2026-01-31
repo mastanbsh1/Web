@@ -5,7 +5,7 @@ A full-stack web application with infrastructure as code, following GitFlow depl
 ## Repository Structure
 
 ```
-repo/
+Web/
 ├── app/                          # Application code
 │   ├── frontend/                 # React/Web UI
 │   ├── backend/                  # REST API (Symfony/Node.js)
