@@ -72,7 +72,7 @@ jobs:
       - name: Initialize Terraform
         run: |
           terraform init \
-                        -backend-config="envs/${{ env.TF_ENVIRONMENT }}/backend.hcl"
+            -backend-config="envs/${{ env.TF_ENVIRONMENT }}/backend.hcl"
         working-directory: ${{ env.TF_WORKING_DIR }}
 
       - name: Terraform Destroy Plan

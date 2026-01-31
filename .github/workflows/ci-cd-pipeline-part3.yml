@@ -31,13 +31,13 @@ jobs:
           BRANCH="${{ github.event.workflow_run.head_branch }}"
           if [[ "$BRANCH" == "main" ]]; then
             echo "environment=prod" >> $GITHUB_OUTPUT
-            echo "target_url=https://example.com" >> $GITHUB_OUTPUT
+            echo "target_url=https://karthik.uk" >> $GITHUB_OUTPUT
           elif [[ "$BRANCH" == "develop" ]]; then
             echo "environment=dev" >> $GITHUB_OUTPUT
-            echo "target_url=https://dev.example.com" >> $GITHUB_OUTPUT
+            echo "target_url=https://dev.karthik.uk" >> $GITHUB_OUTPUT
           else
             echo "environment=uat" >> $GITHUB_OUTPUT
-            echo "target_url=https://uat.example.com" >> $GITHUB_OUTPUT
+            echo "target_url=https://uat.karthik.uk" >> $GITHUB_OUTPUT
           fi
 
   # ==========================================================================

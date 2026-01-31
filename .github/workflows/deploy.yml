@@ -142,7 +142,7 @@ jobs:
     needs: [setup, build-frontend]
     environment:
       name: ${{ needs.setup.outputs.environment }}
-      url: https://${{ needs.setup.outputs.environment == 'prod' && 'example.com' || format('{0}.example.com', needs.setup.outputs.environment) }}
+      url: https://${{ needs.setup.outputs.environment == 'prod' && 'karthik.uk' || format('{0}.karthik.uk', needs.setup.outputs.environment) }}
     env:
       ENVIRONMENT: ${{ needs.setup.outputs.environment }}
     steps:

@@ -142,7 +142,7 @@ jobs:
       - name: Initialize Terraform
         run: |
           terraform init \
-                        -backend-config="envs/${{ env.TF_ENVIRONMENT }}/backend.hcl"
+            -backend-config="envs/${{ env.TF_ENVIRONMENT }}/backend.hcl"
         working-directory: ${{ env.TF_WORKING_DIR }}
 
       - name: Terraform Plan
@@ -196,7 +196,7 @@ jobs:
     if: needs.setup.outputs.should_apply == 'true'
     environment:
       name: ${{ needs.setup.outputs.environment }}
-      url: https://${{ needs.setup.outputs.environment == 'prod' && 'example.com' || format('{0}.example.com', needs.setup.outputs.environment) }}
+      url: https://${{ needs.setup.outputs.environment == 'prod' && 'karthik.uk' || format('{0}.karthik.uk', needs.setup.outputs.environment) }}
     env:
       TF_ENVIRONMENT: ${{ needs.setup.outputs.tf_environment }}
     steps:
@@ -224,7 +224,7 @@ jobs:
       - name: Initialize Terraform
         run: |
           terraform init \
-                        -backend-config="envs/${{ env.TF_ENVIRONMENT }}/backend.hcl"
+            -backend-config="envs/${{ env.TF_ENVIRONMENT }}/backend.hcl"
         working-directory: ${{ env.TF_WORKING_DIR }}
 
       - name: Terraform Apply
