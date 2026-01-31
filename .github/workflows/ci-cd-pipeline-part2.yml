@@ -191,14 +191,14 @@ jobs:
         run: |
           echo ">>> Initializing Terraform..."
           cd infra/terraform
-          terraform init -backend-config="environments/${{ env.TF_ENV }}/backend.hcl"
+                    terraform init -backend-config="envs/${{ env.TF_ENV }}/backend.hcl"
           echo "✅ Terraform init complete"
 
       - name: Terraform Plan
         run: |
           echo ">>> Planning infrastructure changes..."
           cd infra/terraform
-          terraform plan -var-file="environments/${{ env.TF_ENV }}/terraform.tfvars" -out=tfplan
+                    terraform plan -var-file="envs/${{ env.TF_ENV }}/terraform.tfvars" -out=tfplan
           echo "✅ Terraform plan complete"
 
       - name: Terraform Apply

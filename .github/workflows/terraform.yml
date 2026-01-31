@@ -142,14 +142,14 @@ jobs:
       - name: Initialize Terraform
         run: |
           terraform init \
-            -backend-config="environments/${{ env.TF_ENVIRONMENT }}/backend.hcl"
+                        -backend-config="envs/${{ env.TF_ENVIRONMENT }}/backend.hcl"
         working-directory: ${{ env.TF_WORKING_DIR }}
 
       - name: Terraform Plan
         id: plan
         run: |
           terraform plan \
-            -var-file="environments/${{ env.TF_ENVIRONMENT }}/terraform.tfvars" \
+            -var-file="envs/${{ env.TF_ENVIRONMENT }}/terraform.tfvars" \
             -out=tfplan \
             -no-color
         working-directory: ${{ env.TF_WORKING_DIR }}
@@ -224,7 +224,7 @@ jobs:
       - name: Initialize Terraform
         run: |
           terraform init \
-            -backend-config="environments/${{ env.TF_ENVIRONMENT }}/backend.hcl"
+                        -backend-config="envs/${{ env.TF_ENVIRONMENT }}/backend.hcl"
         working-directory: ${{ env.TF_WORKING_DIR }}
 
       - name: Terraform Apply
