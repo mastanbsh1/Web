@@ -12,11 +12,7 @@ variable "environment" {
   type        = string
 }
 
-variable "cloudfront_oai_arn" {
-  description = "CloudFront Origin Access Identity ARN"
-  type        = string
-  default     = null
-}
+
 
 variable "tags" {
   description = "Tags to apply to resources"

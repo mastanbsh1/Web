@@ -49,6 +49,9 @@ locals {
   # Environment-specific naming
   name_prefix = "${var.project_name}-${var.environment}"
 
+  # Application domain (used for DNS records)
+  app_domain = var.environment == "prod" ? var.domain_name : "${var.environment}.${var.domain_name}"
+
   # Common tags
   common_tags = {
     Environment = var.environment
