@@ -1,0 +1,13 @@
+import client from './client';
+export const fetchProducts = () => client.get('/products').then(r => r.data);
+export const fetchProduct = (id) => client.get(`/products/${id}`).then(r => r.data);
+export const register = (email, password) => client.post('/register', { email, password }).then(r => r.data);
+export const login = (email, password) => client.post('/login', { email, password }).then(r => r.data);
+export const getCart = () => client.get('/cart').then(r => r.data);
+export const addToCart = (productId, quantity=1) => client.post('/cart/items', { productId, quantity }).then(r => r.data);
+export const updateCartItem = (productId, quantity) => client.put(`/cart/items/${productId}`, { quantity }).then(r => r.data);
+export const removeCartItem = (productId) => client.delete(`/cart/items/${productId}`).then(r => r.data);
+export const clearCart = () => client.post('/cart/clear').then(r => r.data);
+export const checkout = () => client.post('/checkout').then(r => r.data);
+export const getOrders = () => client.get('/orders').then(r => r.data);
+export const getOrder = (id) => client.get(`/orders/${id}`).then(r => r.data);
