@@ -108,7 +108,7 @@ jobs:
       - name: "📦 Build Frontend"
         run: |
           echo ">>> Installing frontend dependencies..."
-          cd fronted && npm ci
+          cd app/frontend && npm ci
           echo ">>> Building frontend..."
           npm run build || echo "No build script, skipping"
           echo "✅ Frontend build complete"
@@ -116,7 +116,7 @@ jobs:
       - name: "📦 Build Backend"
         run: |
           echo ">>> Installing backend dependencies..."
-          cd backend && npm ci
+          cd app/backend && npm ci
           echo ">>> Building backend..."
           npm run build || echo "No build script, skipping"
           echo "✅ Backend build complete"
@@ -126,8 +126,8 @@ jobs:
         with:
           name: build-artifacts
           path: |
-            fronted/
-            backend/
+            app/frontend/
+            app/backend/
 
   # ==========================================================================
   # STAGE 3: SonarCloud Scan (Code Quality & Security)
@@ -165,10 +165,10 @@ jobs:
             -Dsonar.organization=${{ secrets.SONAR_ORGANIZATION }}
             -Dsonar.projectKey=${{ secrets.SONAR_ORGANIZATION }}_web-app
             -Dsonar.projectName=web-app
-            -Dsonar.sources=fronted/src,backend/src
-            -Dsonar.tests=fronted/src,backend/src
+            -Dsonar.sources=app/frontend/src,app/backend/src
+            -Dsonar.tests=app/frontend/src,app/backend/src
             -Dsonar.test.inclusions=**/*.test.js,**/*.spec.js,**/*.test.ts,**/*.spec.ts
-            -Dsonar.javascript.lcov.reportPaths=fronted/coverage/lcov.info,backend/coverage/lcov.info
+            -Dsonar.javascript.lcov.reportPaths=app/frontend/coverage/lcov.info,app/backend/coverage/lcov.info
             -Dsonar.coverage.exclusions=**/*.test.js,**/*.spec.js,**/node_modules/**
 
       - name: "🚦 SonarCloud Quality Gate Check"
@@ -235,7 +235,7 @@ jobs:
       - name: Create Dockerfiles
         run: |
           # Frontend Dockerfile
-          cat > fronted/Dockerfile << 'EOF'
+          cat > app/frontend/Dockerfile << 'EOF'
           FROM node:20-alpine
           WORKDIR /app
           COPY package*.json ./
@@ -246,7 +246,7 @@ jobs:
           EOF
 
           # Backend Dockerfile
-          cat > backend/Dockerfile << 'EOF'
+          cat > app/backend/Dockerfile << 'EOF'
           FROM node:20-alpine
           WORKDIR /app
           COPY package*.json ./
@@ -259,13 +259,13 @@ jobs:
       - name: Build Frontend Image
         run: |
           echo ">>> Building frontend image..."
-          docker build -t web-app-frontend:${{ github.sha }} ./fronted
+          docker build -t web-app-frontend:${{ github.sha }} ./app/frontend
           echo "✅ Frontend image built"
 
       - name: Build Backend Image
         run: |
           echo ">>> Building backend image..."
-          docker build -t web-app-backend:${{ github.sha }} ./backend
+          docker build -t web-app-backend:${{ github.sha }} ./app/backend
           echo "✅ Backend image built"
 
       - name: Save Docker Images
