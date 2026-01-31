@@ -137,6 +137,10 @@ jobs:
         working-directory: Web/fronted
         run: npm install
 
+      - name: Install backend dependencies
+        working-directory: Web/backend
+        run: npm install || echo "No package.json found in backend folder, skipping npm install."
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
