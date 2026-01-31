@@ -101,7 +101,7 @@ jobs:
           retention-days: 5
 
   # ==========================================================================
-  # Build Backend
+  # Build Backend (PHP)
   # ==========================================================================
   build-backend:
     name: "Build Backend"
@@ -113,25 +113,21 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
         with:
-          node-version: ${{ env.NODE_VERSION }}
-          cache: 'npm'
-          cache-dependency-path: app/backend/package-lock.json
+          php-version: '8.2'
+          extensions: mbstring, xml, ctype, json, bcmath, tokenizer
+          coverage: none
 
       - name: Install Dependencies
-        run: npm ci
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader
         working-directory: ./app/backend
 
       - name: Run Tests
-        run: npm test --if-present
+        run: vendor/bin/phpunit --configuration phpunit.xml.dist
         working-directory: ./app/backend
         continue-on-error: true
-
-      - name: Build Application
-        run: npm run build --if-present
-        working-directory: ./app/backend
 
   # ==========================================================================
   # Deploy to S3/CloudFront
