@@ -149,7 +149,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install frontend dependencies
-        working-directory: Web/fronted
+        working-directory: Web/app/fronted
         run: npm install
 
       - name: Set up PHP
@@ -160,11 +160,11 @@ jobs:
           coverage: none
 
       - name: Install backend dependencies
-        working-directory: Web/backend
+        working-directory: Web/app/backend
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
       - name: Run backend tests
-        working-directory: Web/backend
+        working-directory: Web/app/backend
         run: vendor/bin/phpunit --configuration phpunit.xml.dist
 
       - name: Setup Node.js
