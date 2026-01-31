@@ -262,14 +262,20 @@ jobs:
           EXPOSE 4000
           CMD ["npm", "start"]
           EOF
-
-      - name: Build Frontend Image
-        run: |
-          echo ">>> Building frontend image..."
-          docker build -t web-app-frontend:${{ github.sha }} ./fronted
-          echo "✅ Frontend image built"
-
-      - name: Build Backend Image
+            cat > backend/Dockerfile << 'EOF'
+            FROM php:8.2-apache-alpine
+            RUN apk add --no-cache icu-dev postgresql-dev git unzip \
+                && docker-php-ext-install intl pdo pdo_mysql opcache
+            RUN docker-php-ext-enable opcache
+            RUN sed -i 's!/var/www/html!/app!g' /etc/apache2/httpd.conf /etc/apache2/conf.d/*
+            WORKDIR /app
+            COPY . /app
+            RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+            RUN composer install --no-interaction --prefer-dist --optimize-autoloader
+            RUN chown -R www-data:www-data /app/var /app/vendor
+            EXPOSE 80
+            CMD ["httpd", "-D", "FOREGROUND"]
+            EOF
         run: |
           echo ">>> Building backend image..."
           docker build -t web-app-backend:${{ github.sha }} ./backend
