@@ -113,16 +113,9 @@ jobs:
           npm run build || echo "No build script, skipping"
           echo "✅ Frontend build complete"
 
-      - name: "📦 Build Backend (Node.js)"
-        run: |
-          echo ">>> Installing backend dependencies..."
-          cd app/backend && npm ci
-          echo ">>> Building backend..."
-          npm run build || echo "No build script, skipping"
-          echo "✅ Backend build complete"
+      # PHP backend only, Node.js backend build removed
 
-      - name: Set up PHP (for Symfony backend if exists)
-        if: hashFiles('backend/composer.json') != ''
+      - name: Set up PHP Backend
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
@@ -130,12 +123,10 @@ jobs:
           coverage: none
 
       - name: Install PHP backend dependencies
-        if: hashFiles('backend/composer.json') != ''
         working-directory: backend
         run: composer install --no-interaction --prefer-dist --optimize-autoloader
 
       - name: Run PHP backend tests
-        if: hashFiles('backend/composer.json') != ''
         working-directory: backend
         run: vendor/bin/phpunit --configuration phpunit.xml.dist
         continue-on-error: true
