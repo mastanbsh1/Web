@@ -20,7 +20,7 @@ module "vpc" {
 }
 
 # -----------------------------------------------------------------------------
-# Route 53 Module
+# Route 53 Module (Hosted Zone only - no CloudFront dependency)
 # -----------------------------------------------------------------------------
 
 module "route53" {
@@ -32,13 +32,12 @@ module "route53" {
   create_hosted_zone = var.create_hosted_zone
   hosted_zone_id     = var.hosted_zone_id
 
-  # CloudFront alias target (if enabled)
-  cloudfront_domain_name    = var.enable_cloudfront ? module.cloudfront[0].domain_name : null
-  cloudfront_hosted_zone_id = var.enable_cloudfront ? module.cloudfront[0].hosted_zone_id : null
+  # CloudFront alias target will be set to null initially
+  # DNS records will be created by a separate resource after CloudFront is ready
+  cloudfront_domain_name    = null
+  cloudfront_hosted_zone_id = null
 
   tags = local.common_tags
-
-  depends_on = [module.cloudfront]
 }
 
 # -----------------------------------------------------------------------------
@@ -53,9 +52,11 @@ module "acm" {
   domain_name        = var.domain_name
   create_certificate = var.create_certificate
   certificate_arn    = var.certificate_arn
-  hosted_zone_id     = var.create_hosted_zone ? module.route53.hosted_zone_id : var.hosted_zone_id
+  hosted_zone_id     = module.route53.hosted_zone_id
 
   tags = local.common_tags
+
+  depends_on = [module.route53]
 }
 
 # -----------------------------------------------------------------------------
@@ -68,9 +69,6 @@ module "s3" {
 
   project_name = var.project_name
   environment  = var.environment
-
-  # CloudFront OAI for secure access
-  cloudfront_oai_arn = var.enable_cloudfront ? module.cloudfront[0].origin_access_identity_arn : null
 
   tags = local.common_tags
 }
@@ -95,7 +93,33 @@ module "cloudfront" {
 
   tags = local.common_tags
 
-  depends_on = [module.acm, module.s3]
+  depends_on = [module.acm]
+}
+
+# -----------------------------------------------------------------------------
+# S3 Bucket Policy for CloudFront OAI (applied after both modules are created)
+# -----------------------------------------------------------------------------
+
+resource "aws_s3_bucket_policy" "cloudfront_access" {
+  count = var.enable_s3_hosting && var.enable_cloudfront ? 1 : 0
+
+  bucket = module.s3[0].bucket_id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid    = "AllowCloudFrontOAI"
+        Effect = "Allow"
+        Principal = {
+          AWS = module.cloudfront[0].origin_access_identity_arn
+        }
+        Action   = "s3:GetObject"
+        Resource = "${module.s3[0].bucket_arn}/*"
+      }
+    ]
+  })
+
+  depends_on = [module.s3, module.cloudfront]
 }
 
 # -----------------------------------------------------------------------------
@@ -148,4 +172,58 @@ module "s3_artifacts" {
 
   project_name = var.project_name
   tags         = local.common_tags
+}
+
+# -----------------------------------------------------------------------------
+# Route53 DNS Records for CloudFront (created after CloudFront is ready)
+# -----------------------------------------------------------------------------
+
+
+
+resource "aws_route53_record" "cloudfront_alias" {
+  count = var.enable_cloudfront ? 1 : 0
+
+  zone_id = module.route53.hosted_zone_id
+  name    = local.app_domain
+  type    = "A"
+
+  alias {
+    name                   = module.cloudfront[0].domain_name
+    zone_id                = module.cloudfront[0].hosted_zone_id
+    evaluate_target_health = false
+  }
+
+  depends_on = [module.cloudfront]
+}
+
+resource "aws_route53_record" "cloudfront_alias_ipv6" {
+  count = var.enable_cloudfront ? 1 : 0
+
+  zone_id = module.route53.hosted_zone_id
+  name    = local.app_domain
+  type    = "AAAA"
+
+  alias {
+    name                   = module.cloudfront[0].domain_name
+    zone_id                = module.cloudfront[0].hosted_zone_id
+    evaluate_target_health = false
+  }
+
+  depends_on = [module.cloudfront]
+}
+
+resource "aws_route53_record" "cloudfront_www" {
+  count = var.environment == "prod" && var.enable_cloudfront ? 1 : 0
+
+  zone_id = module.route53.hosted_zone_id
+  name    = "www.${var.domain_name}"
+  type    = "A"
+
+  alias {
+    name                   = module.cloudfront[0].domain_name
+    zone_id                = module.cloudfront[0].hosted_zone_id
+    evaluate_target_health = false
+  }
+
+  depends_on = [module.cloudfront]
 }
